@@ -109,6 +109,33 @@ nav {
   justify-content: flex-end; padding: 0 6% 6%;
   position: relative; overflow: hidden;
 }
+
+  .hero-content {
+  display: flex;
+  align-items: flex-end;
+  gap: 48px;
+  position: relative;
+  z-index: 2;
+}
+.hero-polaroid {
+  background: #f5f0e8;
+  padding: 10px 10px 32px 10px;
+  transform: rotate(3deg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  flex-shrink: 0;
+  width: 220px;
+  margin-bottom: 12px;
+}
+.hero-polaroid img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 768px) {
+  .hero-content { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .hero-polaroid { width: 160px; }
+}
 .hero-name {
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(5rem, 16vw, 18rem);
@@ -177,6 +204,16 @@ section { padding: clamp(80px,10vw,140px) 6%; }
   gap: 80px; align-items: center;
   margin-top: 60px;
 }
+  .about-photo-wrap {
+  position: relative;
+}
+.about-photo {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
 .about-text {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
   line-height: 1.85;
@@ -206,6 +243,19 @@ section { padding: clamp(80px,10vw,140px) 6%; }
   grid-template-columns: repeat(3,1fr);
   gap: 1px; margin-top: 60px;
   border: 1px solid var(--border);
+}
+  .services-hero-img {
+  width: 100%;
+  height: 340px;
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+.services-hero-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.7);
 }
 .service-item {
   padding: 48px 36px;
@@ -425,7 +475,12 @@ footer span { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase
 <!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-noise"></div>
+ <div class="hero-content">
   <div class="hero-name">HELMI<br><span>ALSAYED</span></div>
+  <div class="hero-polaroid">
+    <img src="images/hero.jpg" alt="Helmi Alsayed">
+  </div>
+</div>
   <p class="hero-tagline">Social Media Manager &nbsp;·&nbsp; Video Producer &nbsp;·&nbsp; Director of Photography</p>
   <div class="hero-scroll">Scroll</div>
   <div class="hero-line"></div>
@@ -440,6 +495,9 @@ footer span { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase
       I am a Social Media Manager, Video Producer, and Director of Photography with experience creating content for brands, educational institutions, podcasts, and commercial campaigns.<br><br>
       My work combines creativity, storytelling, and strategy to help businesses connect with their audience through impactful visual content. Based in Lebanon, I specialize in Social Media Management, Video Production, and Cinematic Content Creation.
     </p>
+       <div class="about-photo-wrap reveal">
+      <img src="images/about.jpg" alt="Helmi Alsayed" class="about-photo">
+    </div>
     <div class="about-stats">
       <div class="stat-box reveal reveal-delay-1">
         <div class="stat-number">3+</div>
@@ -465,6 +523,9 @@ footer span { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase
 <section id="services">
   <div class="section-label reveal">What I Offer</div>
   <h2 class="section-title reveal">MY<br>SERVICES</h2>
+  <div class="services-hero-img reveal">
+  <img src="images/lighting.jpg" alt="Studio lighting">
+</div>
   <div class="services-grid">
     <div class="service-item reveal">
       <div class="service-num">01</div>
