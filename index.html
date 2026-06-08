@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helmi Alsayed — Visual Storyteller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050505;
+  --surface: #0e0e0e;
+  --border: rgba(229,255,0,0.12);
+  --text: #f0f0e8;
+  --muted: rgba(240,240,232,0.5);
+  --accent: #E5FF00;
+  --accent-dim: rgba(229,255,0,0.08);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; font-size:16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.12s ease-out, width 0.25s, height 0.25s, opacity 0.2s;
+  opacity: 0.6;
+}
+.cursor.expanded { width: 20px; height: 20px; }
+.cursor-ring.expanded { width: 60px; height: 60px; opacity: 0.3; }
+
+/* NAV */
+nav {
+  position: fixed; top:0; left:0; right:0;
+  z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 6%;
+  mix-blend-mode: difference;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 3px;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.nav-links a:hover { opacity: 1; }
+
+/* NAV HAMBURGER */
+.hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; }
+.hamburger span { width:24px; height:1.5px; background: var(--text); display:block; transition: 0.3s; }
+
+/* MOBILE NAV */
+.mobile-nav {
+  display: none;
+  position: fixed; inset: 0; background: var(--bg);
+  z-index: 99; flex-direction: column;
+  justify-content: center; align-items: center; gap: 36px;
+}
+.mobile-nav.open { display:flex; }
+.mobile-nav a {
+  font-family: 'Bebas Neue'; font-size: 3rem;
+  letter-spacing: 4px; color: var(--text);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.mobile-nav a:hover { color: var(--accent); }
+
+/* HERO */
+.hero {
+  height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 0 6% 6%;
+  position: relative; overflow: hidden;
+}
+.hero-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(5rem, 16vw, 18rem);
+  line-height: 0.85;
+  letter-spacing: -2px;
+  position: relative; z-index: 2;
+  opacity: 0;
+  transform: translateY(60px);
+  animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+}
+.hero-name span { color: var(--accent); }
+.hero-tagline {
+  margin-top: 28px;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp 1s 0.6s forwards;
+}
+.hero-scroll {
+  position: absolute; right: 6%; bottom: 6%;
+  writing-mode: vertical-rl;
+  font-size: 0.7rem; letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.35;
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-scroll::after {
+  content: '';
+  width: 1px; height: 60px;
+  background: var(--muted);
+  display: block;
+}
+.hero-noise {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4; pointer-events: none; z-index: 1;
+}
+.hero-line {
+  position: absolute; left: 0; bottom: 0; right:0;
+  height: 1px; background: var(--border);
+}
+
+/* SECTIONS */
+section { padding: clamp(80px,10vw,140px) 6%; }
+.section-label {
+  font-size: 0.7rem; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+}
+.section-label::before {
+  content: '';
+  width: 24px; height: 1px; background: var(--accent);
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 8vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -1px;
+}
+
+/* ABOUT */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+  margin-top: 60px;
+}
+.about-text {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.85;
+  color: rgba(240,240,232,0.75);
+  max-width: 520px;
+}
+.about-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+}
+.stat-box {
+  border: 1px solid var(--border);
+  padding: 28px 24px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  transition: border-color 0.3s;
+}
+.stat-box:hover { border-color: var(--accent); }
+.stat-number {
+  font-family: 'Bebas Neue'; font-size: 3.5rem;
+  color: var(--accent); line-height: 1;
+}
+.stat-label { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; margin-top: 6px; }
+
+/* SERVICES */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px; margin-top: 60px;
+  border: 1px solid var(--border);
+}
+.service-item {
+  padding: 48px 36px;
+  border-right: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  transition: background 0.3s;
+}
+.service-item:last-child { border-right: none; }
+.service-item:hover { background: var(--accent-dim); }
+.service-num {
+  font-family: 'Bebas Neue'; font-size: 5rem;
+  color: var(--accent); opacity: 0.15; line-height: 1;
+  margin-bottom: 20px;
+}
+.service-name {
+  font-family: 'Bebas Neue'; font-size: 1.8rem;
+  letter-spacing: 1px; margin-bottom: 14px;
+}
+.service-desc { font-size: 0.9rem; line-height: 1.7; opacity: 0.6; }
+
+/* PROJECTS */
+.projects-list { margin-top: 60px; }
+.project-item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 40px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: padding-left 0.3s;
+  position: relative;
+}
+.project-item:hover { padding-left: 16px; }
+.project-item:hover .project-arrow { transform: translateX(6px); }
+.project-num {
+  font-family: 'Bebas Neue'; font-size: 1.1rem;
+  color: var(--accent); opacity: 0.5;
+}
+.project-info h3 {
+  font-family: 'Bebas Neue'; font-size: clamp(1.6rem, 3vw, 2.5rem);
+  letter-spacing: 1px; margin-bottom: 6px;
+}
+.project-info p { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.45; }
+.project-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.project-tag {
+  font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 5px 12px; border: 1px solid var(--border);
+  border-radius: 2px; white-space: nowrap;
+}
+.project-arrow { font-size: 1.2rem; opacity: 0.4; transition: transform 0.3s; margin-left: 12px; }
+
+/* PROJECT MODALS */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 200; display: none;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  max-width: 900px; width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 4px;
+  animation: modalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes modalIn {
+  from { opacity:0; transform: scale(0.95) translateY(20px); }
+  to { opacity:1; transform: scale(1) translateY(0); }
+}
+.modal-close {
+  position: sticky; top: 0;
+  display: flex; justify-content: flex-end;
+  padding: 20px; background: var(--surface);
+  z-index: 1;
+}
+.modal-close button {
+  background: none; border: 1px solid var(--border);
+  color: var(--text); width: 36px; height: 36px;
+  border-radius: 2px; font-size: 1rem; cursor: none;
+  transition: border-color 0.2s;
+}
+.modal-close button:hover { border-color: var(--accent); color: var(--accent); }
+.modal-body { padding: 0 40px 40px; }
+.modal-label {
+  font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px;
+}
+.modal-title {
+  font-family: 'Bebas Neue'; font-size: clamp(2.5rem,6vw,5rem);
+  margin-bottom: 24px; line-height: 1;
+}
+.modal-client {
+  display: flex; gap: 32px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.modal-meta span { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.4; display: block; margin-bottom: 4px; }
+.modal-meta strong { font-size: 0.95rem; }
+.modal-desc { font-size: 1rem; line-height: 1.8; opacity: 0.7; margin-bottom: 32px; max-width: 640px; }
+.modal-embed { aspect-ratio: 16/9; width: 100%; border-radius: 4px; overflow: hidden; margin-bottom: 24px; }
+.modal-embed iframe { width: 100%; height: 100%; border: none; }
+.modal-ig-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 24px; }
+.modal-ig-item { aspect-ratio: 4/5; overflow: hidden; border-radius: 4px; }
+.modal-ig-item iframe { width: 100%; height: 100%; border: none; pointer-events: none; }
+
+/* CONTACT */
+.contact-section { position: relative; }
+.contact-big {
+  font-family: 'Bebas Neue'; font-size: clamp(4rem,12vw,14rem);
+  line-height: 0.85; margin-bottom: 60px;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(240,240,232,0.15);
+}
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  align-items: center;
+}
+.contact-links { display: flex; flex-direction: column; gap: 16px; }
+.contact-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none; color: var(--text);
+  font-size: 0.85rem; letter-spacing: 1px;
+  transition: border-color 0.25s, background 0.25s;
+}
+.contact-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.contact-link-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.4; margin-bottom: 2px; }
+.contact-link-arrow { opacity: 0.4; font-size: 1rem; transition: transform 0.2s; }
+.contact-link:hover .contact-link-arrow { transform: translate(4px,-4px); opacity:1; }
+
+.contact-info { border-left: 1px solid var(--border); padding-left: 60px; }
+.contact-info p { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.4; margin-bottom: 6px; }
+.contact-info strong { font-family: 'Bebas Neue'; font-size: 1.6rem; letter-spacing: 1px; }
+
+/* FOOTER */
+footer {
+  padding: 32px 6%;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+footer span { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.3; }
+
+/* SCROLL REVEAL */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; gap: 48px; }
+  .services-grid { grid-template-columns: 1fr; border:none; }
+  .service-item { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; }
+  .service-item:last-child { border-right: 1px solid var(--border); }
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .contact-info { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 40px; }
+}
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .project-item { grid-template-columns: 60px 1fr; }
+  .project-tags { display: none; }
+  .project-arrow { display: none; }
+  .modal-ig-grid { grid-template-columns: 1fr; }
+  .about-stats { grid-template-columns: 1fr 1fr; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+}
+@media (max-width: 480px) {
+  .modal-body { padding: 0 20px 32px; }
+  .about-stats { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Helmi Alsayed</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#about" onclick="closeMobileNav()">About</a>
+  <a href="#services" onclick="closeMobileNav()">Services</a>
+  <a href="#projects" onclick="closeMobileNav()">Projects</a>
+  <a href="#contact" onclick="closeMobileNav()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-noise"></div>
+  <div class="hero-name">HELMI<br><span>ALSAYED</span></div>
+  <p class="hero-tagline">Social Media Manager &nbsp;·&nbsp; Video Producer &nbsp;·&nbsp; Director of Photography</p>
+  <div class="hero-scroll">Scroll</div>
+  <div class="hero-line"></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label reveal">About Me</div>
+  <h2 class="section-title reveal">ABOUT<br>ME</h2>
+  <div class="about-grid">
+    <p class="about-text reveal">
+      I am a Social Media Manager, Video Producer, and Director of Photography with experience creating content for brands, educational institutions, podcasts, and commercial campaigns.<br><br>
+      My work combines creativity, storytelling, and strategy to help businesses connect with their audience through impactful visual content. Based in Lebanon, I specialize in Social Media Management, Video Production, and Cinematic Content Creation.
+    </p>
+    <div class="about-stats">
+      <div class="stat-box reveal reveal-delay-1">
+        <div class="stat-number">3+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-box reveal reveal-delay-2">
+        <div class="stat-number">10+</div>
+        <div class="stat-label">Clients Served</div>
+      </div>
+      <div class="stat-box reveal reveal-delay-3">
+        <div class="stat-number">∞</div>
+        <div class="stat-label">Stories Told</div>
+      </div>
+      <div class="stat-box reveal reveal-delay-3">
+        <div class="stat-number">LB</div>
+        <div class="stat-label">Based in Lebanon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-label reveal">What I Offer</div>
+  <h2 class="section-title reveal">MY<br>SERVICES</h2>
+  <div class="services-grid">
+    <div class="service-item reveal">
+      <div class="service-num">01</div>
+      <div class="service-name">Social Media Management</div>
+      <p class="service-desc">Growth-focused content strategy and execution. Managing platforms, writing captions, building brand awareness and customer engagement.</p>
+    </div>
+    <div class="service-item reveal reveal-delay-1">
+      <div class="service-num">02</div>
+      <div class="service-name">Video Production</div>
+      <p class="service-desc">Cinematic storytelling from concept to final cut. Video shooting, editing, post-production, and promotional campaigns.</p>
+    </div>
+    <div class="service-item reveal reveal-delay-2">
+      <div class="service-num">03</div>
+      <div class="service-name">Director of Photography</div>
+      <p class="service-desc">Visionary lighting, framing, and camera work. Creating professional visuals that resonate, engage, and inspire audiences.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label reveal">Selected Work</div>
+  <h2 class="section-title reveal">FEATURED<br>PROJECTS</h2>
+  <div class="projects-list">
+
+    <div class="project-item reveal" onclick="openModal('podcast')">
+      <div class="project-num">01</div>
+      <div class="project-info">
+        <h3>Podcast Akkar</h3>
+        <p>72nd Street Company · 2026</p>
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">DOP</span>
+        <span class="project-tag">Lighting</span>
+        <span class="project-tag">Podcast</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-item reveal" onclick="openModal('ark')">
+      <div class="project-num">02</div>
+      <div class="project-info">
+        <h3>A.R.K Solution</h3>
+        <p>Social Media Management · 2026</p>
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Social Media</span>
+        <span class="project-tag">Campaigns</span>
+        <span class="project-tag">Reels</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-item reveal" onclick="openModal('skillnova')">
+      <div class="project-num">03</div>
+      <div class="project-info">
+        <h3>Skill Nova Academy</h3>
+        <p>Commercial Campaign · 2026</p>
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Video Production</span>
+        <span class="project-tag">Education</span>
+        <span class="project-tag">Editing</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+    <div class="project-item reveal" onclick="openModal('hoss')">
+      <div class="project-num">04</div>
+      <div class="project-info">
+        <h3>Hoss Music Video</h3>
+        <p>Fabiana J. Skaff · 2026</p>
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Acting</span>
+        <span class="project-tag">Music Video</span>
+        <span class="project-tag">Production</span>
+      </div>
+      <span class="project-arrow">→</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="contact-big">GET IN<br>TOUCH</div>
+  <div class="contact-grid">
+    <div class="contact-links">
+      <a href="https://instagram.com/helmi.alsayed" target="_blank" class="contact-link">
+        <div>
+          <div class="contact-link-label">Social Media</div>
+          @helmi.alsayed
+        </div>
+        <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="mailto:helmi.al.sayed.1515@gmail.com" class="contact-link">
+        <div>
+          <div class="contact-link-label">Email</div>
+          helmi.al.sayed.1515@gmail.com
+        </div>
+        <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="tel:+96171620054" class="contact-link">
+        <div>
+          <div class="contact-link-label">Phone</div>
+          +961 71 620 054
+        </div>
+        <span class="contact-link-arrow">↗</span>
+      </a>
+    </div>
+    <div class="contact-info reveal">
+      <p>Based In</p>
+      <strong>Lebanon</strong>
+      <br><br>
+      <p>Available For</p>
+      <strong>Freelance &amp; Full-Time</strong>
+      <br><br>
+      <p>Specialties</p>
+      <strong>Video · Social · DOP</strong>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Helmi Alsayed</span>
+  <span>Transforming Ideas Into Engaging Visual Stories</span>
+</footer>
+
+<!-- =============== MODALS =============== -->
+
+<!-- PODCAST AKKAR -->
+<div class="modal-overlay" id="modal-podcast" onclick="handleOverlayClick(event,'modal-podcast')">
+  <div class="modal">
+    <div class="modal-close"><button onclick="closeModal('podcast')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-label">Director of Photography</div>
+      <div class="modal-title">Podcast Akkar</div>
+      <div class="modal-client">
+        <div class="modal-meta"><span>Client</span><strong>72nd Street Company</strong></div>
+        <div class="modal-meta"><span>Role</span><strong>DOP / Camera / Lighting</strong></div>
+        <div class="modal-meta"><span>Year</span><strong>2026</strong></div>
+      </div>
+      <p class="modal-desc">Worked as the Director of Photography for Podcast Akkar, overseeing visual production and ensuring high-quality cinematic content. Responsibilities included camera operation, shot composition, lighting setup, and maintaining consistency in production quality throughout the series.</p>
+      <div class="modal-embed">
+        <iframe src="https://www.youtube.com/embed/videoseries?si=FKtGq-l2I8g_EVFq&list=PLIEGTNh2XKKl7kzPsp6u0H85ibYLqOBif"
+          title="Podcast Akkar" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
+        </iframe>
+      </div>
+      <p style="font-size:0.75rem;opacity:0.4;letter-spacing:1px;">
+        ▶ Watch on <a href="https://www.youtube.com/@podcastakkar" target="_blank" style="color:var(--accent)">YouTube — @podcastakkar</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ARK SOLUTION -->
+<div class="modal-overlay" id="modal-ark" onclick="handleOverlayClick(event,'modal-ark')">
+  <div class="modal">
+    <div class="modal-close"><button onclick="closeModal('ark')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-label">Social Media Manager</div>
+      <div class="modal-title">A.R.K Solution</div>
+      <div class="modal-client">
+        <div class="modal-meta"><span>Client</span><strong>A.R.K Solutions</strong></div>
+        <div class="modal-meta"><span>Role</span><strong>Social Media / Content Creator</strong></div>
+        <div class="modal-meta"><span>Year</span><strong>2026</strong></div>
+      </div>
+      <p class="modal-desc">As the Social Media Manager and Content Creator for Ark Solution, I develop and execute content strategies that showcase the company's professional cleaning services — managing platforms, creating engaging photo and video content, producing reels and promotional campaigns, and building brand awareness.</p>
+      <div style="text-align:center;padding:32px 0;background:var(--accent-dim);border-radius:4px;margin-bottom:24px;border:1px solid var(--border)">
+        <p style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;opacity:0.5;margin-bottom:16px">View the Instagram Profile</p>
+        <a href="https://www.instagram.com/ark.solutions.lb/" target="_blank" 
+           style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--accent);color:#000;border-radius:3px;text-decoration:none;font-weight:500;font-size:0.9rem;letter-spacing:1px">
+          📸 &nbsp;@ark.solutions.lb &nbsp;↗
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILL NOVA -->
+<div class="modal-overlay" id="modal-skillnova" onclick="handleOverlayClick(event,'modal-skillnova')">
+  <div class="modal">
+    <div class="modal-close"><button onclick="closeModal('skillnova')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-label">Video Production &amp; Editing</div>
+      <div class="modal-title">Skill Nova Academy</div>
+      <div class="modal-client">
+        <div class="modal-meta"><span>Client</span><strong>Skill Nova</strong></div>
+        <div class="modal-meta"><span>Role</span><strong>Video Production / Editing</strong></div>
+        <div class="modal-meta"><span>Year</span><strong>2026</strong></div>
+      </div>
+      <p class="modal-desc">Produced and edited educational and promotional video content for Skill Nova, an online coding education center. Work included video shooting, post-production, social media content, promotional reels, and educational videos communicating Skill Nova's mission and programs.</p>
+      <div style="text-align:center;padding:32px 0;background:var(--accent-dim);border-radius:4px;margin-bottom:24px;border:1px solid var(--border)">
+        <p style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;opacity:0.5;margin-bottom:16px">View Content on Instagram</p>
+        <a href="https://www.instagram.com/skillnova.academy/" target="_blank" 
+           style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--accent);color:#000;border-radius:3px;text-decoration:none;font-weight:500;font-size:0.9rem;letter-spacing:1px">
+          📸 &nbsp;@skillnova.academy &nbsp;↗
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOSS MUSIC VIDEO -->
+<div class="modal-overlay" id="modal-hoss" onclick="handleOverlayClick(event,'modal-hoss')">
+  <div class="modal">
+    <div class="modal-close"><button onclick="closeModal('hoss')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-label">Acting Experience</div>
+      <div class="modal-title">Hoss Music Video</div>
+      <div class="modal-client">
+        <div class="modal-meta"><span>Client</span><strong>Fabiana J. Skaff</strong></div>
+        <div class="modal-meta"><span>Role</span><strong>Actor / On-Camera Performance</strong></div>
+        <div class="modal-meta"><span>Year</span><strong>2026</strong></div>
+      </div>
+      <p class="modal-desc">Participated as an actor in the official music video "Hoss" by Lebanese musician Fabiana Skaff. Collaborated with the production and creative team, contributing to the visual storytelling of the music video through on-camera performance.</p>
+      <div class="modal-embed">
+        <iframe src="https://www.youtube.com/embed/I1tTyif4FF0?si=S5LmxXrALMz_wWtF"
+          title="Fabiana - Hoss Music Video"
+          allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
+        </iframe>
+      </div>
+      <p style="font-size:0.75rem;opacity:0.4;letter-spacing:1px;margin-top:12px;">
+        ▶ <a href="https://youtu.be/I1tTyif4FF0" target="_blank" style="color:var(--accent)">Watch on YouTube</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+if (cursor && ring) {
+  let rx = 0, ry = 0, mx = 0, my = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+  (function animateRing() {
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    ring.style.left = rx+'px';
+    ring.style.top = ry+'px';
+    requestAnimationFrame(animateRing);
+  })();
+  document.querySelectorAll('a,button,.project-item,.service-item,.stat-box').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.classList.add('expanded'); ring.classList.add('expanded'); });
+    el.addEventListener('mouseleave', () => { cursor.classList.remove('expanded'); ring.classList.remove('expanded'); });
+  });
+}
+
+// HAMBURGER
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobileNav').classList.toggle('open');
+});
+function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); }
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// MODALS
+function openModal(id) {
+  document.getElementById('modal-'+id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById('modal-'+id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id.replace('modal-',''));
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => {
+      m.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  }
+});
+</script>
+</body>
+</html>
